@@ -81,12 +81,16 @@ function isValidRegistrationNumber(registrationNumber) {
   
       const parkingLot = await ParkingLot.findById(parkingLotId);
       if (!parkingLot) {
-        throw new Error('Invalid Parking Lot');
+        throw new Error('Invalid Parking lot');
+      }
+
+      if (!isValidRegistrationNumber(registrationNumber)) {
+        throw new Error('Invalid Registration Number');
       }
   
       const parkingEntry = await Parking.findOne({ parkingLotId, registrationNumber, status: 'PARKED' });
       if (!parkingEntry) {
-        throw new Error('Car not found in the parking lot');
+        throw new Error('Invalid Registration Number');
       }
   
       parkingLot.availableSlots.push(parkingEntry.slotNumber);
@@ -100,7 +104,7 @@ function isValidRegistrationNumber(registrationNumber) {
 
       res.status(200).json({ isSuccess: true, response });
     } catch (error) {
-      res.status(200).json({ isSuccess: false, error: { reason: "" } });
+      res.status(200).json({ isSuccess: false, error: { reason: error.message } });
     }
   });
 
