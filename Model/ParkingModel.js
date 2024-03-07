@@ -13,6 +13,7 @@ const ParkingSchema = new mongoose.Schema({
     color: {
       type: String,
       required: true,
+      enum: ['RED', 'GREEN', 'BLUE', 'BLACK', 'WHITE', 'YELLOW', 'ORANGE']
     },
     slotNumber: {
       type: Number

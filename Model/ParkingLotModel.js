@@ -10,6 +10,10 @@ const ParkingLotSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  availableSlots: {
+    type: [Number],
+    default: []
   }
 });
 
