@@ -122,7 +122,38 @@ function isValidRegistrationNumber(registrationNumber) {
       }));
       res.status(200).json({ isSuccess: true, response: { slots: formattedSlots } });
     } catch (error) {
-      res.status(400).json({ isSuccess: false, error: { reason: "" } });
+      res.status(200).json({ isSuccess: false, error: { reason: error.message } });
+    }
+  });
+
+
+  router.get('/Parkings', async (req, res) => {
+    try {
+      const { color, parkingLotId } = req.query;
+  
+      const parkingLot = await ParkingLot.findById(parkingLotId);
+      if (!parkingLot) {
+        throw new Error('Invalid parking lot id');
+      }
+  
+      const allowedColors = ['RED', 'GREEN', 'BLUE', 'BLACK', 'WHITE', 'YELLOW', 'ORANGE'];
+      if (!allowedColors.includes(color)) {
+        throw new Error('Invalid color');
+      }
+  
+      const registrations = await Parking.find({ parkingLotId, color }).select('color registrationNumber').sort('_id');
+  
+      if (registrations.length === 0) {
+        throw new Error(`No car found with color ${color}`);
+      }
+      const formattedRegistration = registrations.map(slot => ({
+        color: slot.color,
+        registrationNumber: slot.registrationNumber
+      }));
+
+      res.status(200).json({ isSuccess: true, response: { registrations: formattedRegistration } });
+    } catch (error) {
+      res.status(400).json({ isSuccess: false, error: { reason: error.message } });
     }
   });
   
