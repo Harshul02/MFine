@@ -6,7 +6,7 @@ const Parking = require("../Model/ParkingModel");
 let availableSlots = [];
 
 function isValidRegistrationNumber(registrationNumber) {
-    const regex = /^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/; // Assuming format is StateCodeDistrictCodeAlphabetNumber
+    const regex = /^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/; 
     return regex.test(registrationNumber);
   }
 
@@ -61,11 +61,40 @@ function isValidRegistrationNumber(registrationNumber) {
   
       res.status(200).json({ isSuccess: true, response: { slotNumber, status: 'PARKED' } });
     } catch (error) {
-      res.status(200).json({ isSuccess: false, error: { reason: error.message } });
+      res.status(200).json({ isSuccess: false, error: { reason: "" } });
     }
   });
   
 
+
+  router.delete('/Parkings', async (req, res) => {
+    try {
+      const { parkingLotId, registrationNumber } = req.body;
+  
+      const parkingLot = await ParkingLot.findById(parkingLotId);
+      if (!parkingLot) {
+        throw new Error('Invalid parking lot id');
+      }
+  
+      const parkingEntry = await Parking.findOne({ parkingLotId, registrationNumber, status: 'PARKED' });
+      if (!parkingEntry) {
+        throw new Error('Car not found in the parking lot');
+      }
+  
+      parkingLot.availableSlots.push(parkingEntry.slotNumber);
+  
+      parkingEntry.status = 'LEFT';
+      await parkingEntry.save();
+  
+      await parkingLot.save();
+
+      const response = { slotNumber: parkingEntry.slotNumber, registrationNumber, status: "LEFT" };
+
+      res.status(200).json({ isSuccess: true, response });
+    } catch (error) {
+      res.status(400).json({ isSuccess: false, error: { reason: error.message } });
+    }
+  });
 
   
   module.exports = router;
