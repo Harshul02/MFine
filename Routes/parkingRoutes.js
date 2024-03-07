@@ -49,11 +49,11 @@ function isValidRegistrationNumber(registrationNumber) {
   
       const allowedColors = ['RED', 'GREEN', 'BLUE', 'BLACK', 'WHITE', 'YELLOW', 'ORANGE'];
       if (!allowedColors.includes(color)) {
-        throw new Error('Invalid color');
+        throw new Error('Invalid Color');
       }
   
       if (!isValidRegistrationNumber(registrationNumber)) {
-        throw new Error('Invalid registration number');
+        throw new Error('Invalid Registration Number');
       }
   
       if (parkingLot.availableSlots.length === 0) {
@@ -69,7 +69,7 @@ function isValidRegistrationNumber(registrationNumber) {
   
       res.status(200).json({ isSuccess: true, response: { slotNumber, status: 'PARKED' } });
     } catch (error) {
-      res.status(200).json({ isSuccess: false, error: { reason: "" } });
+      res.status(200).json({ isSuccess: false, error: { reason: error.message } });
     }
   });
   
