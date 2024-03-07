@@ -81,7 +81,7 @@ function isValidRegistrationNumber(registrationNumber) {
   
       const parkingLot = await ParkingLot.findById(parkingLotId);
       if (!parkingLot) {
-        throw new Error('Invalid parking lot id');
+        throw new Error('Invalid Parking Lot');
       }
   
       const parkingEntry = await Parking.findOne({ parkingLotId, registrationNumber, status: 'PARKED' });
