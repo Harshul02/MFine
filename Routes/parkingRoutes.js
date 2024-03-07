@@ -57,7 +57,7 @@ function isValidRegistrationNumber(registrationNumber) {
       }
   
       if (parkingLot.availableSlots.length === 0) {
-        throw new Error('No available slots');
+        throw new Error('Invalid Registration Number');
       }
   
       const slotNumber = parkingLot.availableSlots.shift(); 
