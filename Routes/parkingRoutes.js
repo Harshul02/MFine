@@ -13,15 +13,23 @@ function isValidRegistrationNumber(registrationNumber) {
 
   router.post('/ParkingLots', async (req, res) => {
     try {
-      const { capacity } = req.body;
-  
-      if (capacity < 0 || capacity > 2000) {
-        throw new Error('Capacity should be between 0 and 2000');
+      const { capacity, id } = req.body;
+        
+      if(!id){
+        throw new Error("Invalid ID");
+      }
+      if (typeof capacity !== 'number' || !capacity || isNaN(capacity) || capacity < 0 || capacity === null) {
+        throw new Error('Invalid Capacity');
+      }
+
+      if(capacity > 2000){
+        throw new Error('Capacity exceeds maximum limit')
       }
   
       const parkingLot = new ParkingLot({ capacity, availableSlots: Array.from({ length: capacity }, (_, i) => i + 1) });
+      parkingLot._id = id;
       await parkingLot.save();
-      const response = { _id: parkingLot._id, capacity: parkingLot.capacity, isActive: parkingLot.isActive };
+      const response = { id: id, capacity: parkingLot.capacity, isActive: parkingLot.isActive };
       res.status(200).json({ isSuccess: true, response });
     } catch (error) {
       res.status(200).json({ isSuccess: false, error: { reason: error.message } });
@@ -92,7 +100,7 @@ function isValidRegistrationNumber(registrationNumber) {
 
       res.status(200).json({ isSuccess: true, response });
     } catch (error) {
-      res.status(400).json({ isSuccess: false, error: { reason: error.message } });
+      res.status(200).json({ isSuccess: false, error: { reason: "" } });
     }
   });
 
@@ -107,7 +115,7 @@ function isValidRegistrationNumber(registrationNumber) {
   
       const allowedColors = ['RED', 'GREEN', 'BLUE', 'BLACK', 'WHITE', 'YELLOW', 'ORANGE'];
       if (!allowedColors.includes(color)) {
-        throw new Error('Invalid color');
+        throw new Error('Invalid Color');
       }
   
       const slots = await Parking.find({ parkingLotId, color, status: 'PARKED' }).select('color slotNumber').sort('slotNumber');
@@ -153,10 +161,10 @@ function isValidRegistrationNumber(registrationNumber) {
 
       res.status(200).json({ isSuccess: true, response: { registrations: formattedRegistration } });
     } catch (error) {
-      res.status(400).json({ isSuccess: false, error: { reason: error.message } });
+      res.status(200).json({ isSuccess: false, error: { reason: error.message } });
     }
   });
 
-  
+
   
   module.exports = router;
